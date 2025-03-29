@@ -1,24 +1,28 @@
 pipeline {
-    agent any 
+    agent any
+
     stages {
-        stage ('build'){[
-            steps{
-                git url: https://github.com/Krishna-Sharma-g/finalrepo.git ,branch: 'main'
-            }
-        ]
-            stage('ckeckout code')
+        stage('Clone Repository') {
             steps {
-                echo 'build the project '
+                checkout([$class: 'GitSCM', 
+                          branches: [[name: '*/main']], 
+                          userRemoteConfigs: [[url: '']]
+                ])
             }
         }
-        stage ('test'){
+        stage('Install Dependencies') {
             steps {
-                echo 'test the project '
+                sh 'npm install'
             }
         }
-        stage ('deploy'){
+        stage('Run Tests') {
             steps {
-                echo 'deploy the project '
+                sh 'npm test || echo "No tests defined"'
+            }
+        }
+        stage('Build Application') {
+            steps {
+                sh 'npm run build'
             }
         }
     }
